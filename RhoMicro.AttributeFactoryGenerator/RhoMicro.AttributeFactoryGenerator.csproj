@@ -4,7 +4,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<!--'.0' required for auto source gen updater-->
 		<!--<AssemblyName>$(MSBuildProjectName).0</AssemblyName>-->
-		<AssemblyName>$(MSBuildProjectName).50</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<RootNamespace>$(MSBuildProjectName)</RootNamespace>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<developmentDependency>true</developmentDependency>
@@ -25,7 +25,7 @@
 		</Description>
 		<Copyright>2023</Copyright>
 		<PackageTags>Source Generator; Attributes; Tooling</PackageTags>
-		<Version>1.0.0</Version>
+		<Version>1.0.4</Version>
 		<PackageId>RhoMicro.AttributeFactoryGenerator</PackageId>
 		<Company>RhoMicro</Company>
 		<PackageProjectUrl>https://github.com/PaulBraetz/AttributeFactoryGenerator/</PackageProjectUrl>

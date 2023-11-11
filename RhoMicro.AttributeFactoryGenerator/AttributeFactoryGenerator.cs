@@ -26,7 +26,9 @@ public sealed class AttributeFactoryGenerator : IIncrementalGenerator
 #pragma warning disable
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+
 namespace {NAMESPACE}
 {
     {ACCESSIBILITY} partial class {NAME}
@@ -73,10 +75,12 @@ namespace {NAMESPACE}
             data.Select(d => (Success: {NAME}.TryCreate(d, out var a), Attribute:a))
                 .Where(t=>t.Success)
                 .Select(t=>t.Attribute);
+        public static Boolean TryParse{NAME}(this AttributeData data, out {NAME}? attribute) =>
+            {NAME}.TryCreate(data, out attribute);
     }
 }
 """;
-    private const String _extensionsPlaceholder = "{EXTENSIONS}";
+
     private const String _targetCtorCasesPlaceholder = "{CTORCASES}";
     private const String _targetPropCasesPlaceholder = "{PROPCASES}";
     private const String _targetNamePlaceholder = "{NAME}";
@@ -85,7 +89,8 @@ namespace {NAMESPACE}
     private const String _targetAccessibilityPlaceholder = "{ACCESSIBILITY}";
     private const String _targetNamespacePlaceholder = "{NAMESPACE}";
 
-    private const String _attributeName = "GenerateFactoryAttribute";
+    private const String _generateAttributeName = "GenerateFactoryAttribute";
+    private const String _excludeAttributeName = "ExcludeConstructorAttribute";
     private const String _attributeNamespace = "RhoMicro.AttributeFactoryGenerator";
     private const String _attributeSource =
 """
@@ -101,6 +106,12 @@ namespace RhoMicro.AttributeFactoryGenerator
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     internal sealed class GenerateFactoryAttribute : Attribute { }
+
+    /// <summary>
+    /// Marks the target to be excluded from the generated attribute factory.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Constructor, AllowMultiple = false, Inherited = false)]
+    internal sealed class ExcludeConstructorAttribute : Attribute { }
 }
 """;
 
@@ -137,12 +148,8 @@ namespace RhoMicro.AttributeFactoryGenerator
                 (c.Node as TypeDeclarationSyntax).Modifiers.Any(SyntaxKind.PartialKeyword) &&
                 c.SemanticModel.GetDeclaredSymbol(c.Node, cancellationToken: t)
                     .GetAttributes()
-                    //.Select(a => (Success: MyAttribute.TryCreate(a, out var r), Result: r))
-                    //.Where(t => t.Success)
-                    //.Select(t => t.Result)
-                    //.ToArray()
                     .Select(a => a.AttributeClass)
-                    .Any(c => c.Name == _attributeName &&
+                    .Any(c => c.Name == _generateAttributeName &&
                         c.ContainingNamespace.ToDisplayString() == _attributeNamespace) ?
                 (Success: true, Target: c.Node as TypeDeclarationSyntax, c.SemanticModel) :
                 default)
@@ -163,7 +170,7 @@ namespace RhoMicro.AttributeFactoryGenerator
 
                 var containerFields = typeProps
                     .Select(p => ToCamelCase(p.Name))
-                    .Select(n => $"private Object _{n}SymbolContainer;");
+                    .Select(n => $"private Object? _{n}SymbolContainer;");
 
                 var symbolProps = typeProps
                     .Select(p =>
@@ -207,7 +214,9 @@ $"set => _{ToCamelCase(p.Name)}SymbolContainer = value;}}");
             {
                 var constructors = c.Symbol.Constructors;
 
-                var ctorCases = constructors.GroupBy(c => c.Parameters.Length)
+                var ctorCases = constructors
+                    .Where(c => !c.GetAttributes().Any(a => a.AttributeClass.Name == _excludeAttributeName))
+                    .GroupBy(c => c.Parameters.Length)
                     .Select(g =>
                     {
                         var groupBranches = g.Select(c =>
@@ -293,7 +302,7 @@ $"set => _{ToCamelCase(p.Name)}SymbolContainer = value;}}");
                 return (Hint: hint, Source: source);
             });
 
-        context.RegisterPostInitializationOutput(static c => c.AddSource(_attributeName, _attributeSource));
+        context.RegisterPostInitializationOutput(static c => c.AddSource(_generateAttributeName, _attributeSource));
         context.RegisterSourceOutput(provider, static (c, s) => c.AddSource(s.Hint, s.Source));
     }
 }
