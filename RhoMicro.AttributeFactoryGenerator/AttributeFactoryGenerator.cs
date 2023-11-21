@@ -25,6 +25,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+
 namespace {NAMESPACE}
 {
     {ACCESSIBILITY} partial class {NAME}
