@@ -3,7 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<!--'.0' required for auto source gen updater-->
-		<AssemblyName>$(MSBuildProjectName).3</AssemblyName>
+		<!--<AssemblyName>$(MSBuildProjectName).0</AssemblyName>-->
+		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 		<RootNamespace>$(MSBuildProjectName)</RootNamespace>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<developmentDependency>true</developmentDependency>
@@ -35,6 +36,14 @@
 		<PackageReference Update="NETStandard.Library" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" />
 		<ProjectReference Include="..\RhoMicro.AttributeFactoryGenerator\RhoMicro.AttributeFactoryGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+		<!--<PackageReference Include="RhoMicro.AttributeFactoryGenerator" Version="1.0.8">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>-->
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="bin\Debug\netstandard2.0\\TestGenerator.dll" />
 	</ItemGroup>
 
 	<ItemGroup>

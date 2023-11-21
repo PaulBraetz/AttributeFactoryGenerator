@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 
 using TestGenerator.Attributes;
@@ -18,10 +19,17 @@ public class Generator : IIncrementalGenerator
             (c, t) =>
             {
                 var symbol = (ITypeSymbol)c.SemanticModel.GetDeclaredSymbol(c.Node);
+
+                ImmutableArray<AttributeData> attributes = symbol.GetAttributes();
+
+                IEnumerable<TestGeneratorTargetAttribute> allParsed =
+                    attributes.OfTestGeneratorTargetAttribute();
+                TestGeneratorTargetAttribute singleParsed =
+                    TestGeneratorTargetAttribute.TryCreate(attributes[0], out var s) ? s : null;
+                singleParsed = symbol.TryGetFirstTestGeneratorTargetAttribute(out var a) ? a : null;
+
                 var attribute = symbol.GetAttributes()
-                    .Select(a => (Success: TestGeneratorTargetAttribute.TryCreate(a, out var r), Instance: r))
-                    .Where(t => t.Success)
-                    .Select(t => t.Instance)
+                    .OfTestGeneratorTargetAttribute()
                     .Single();
                 var impl = $"\"{attribute.TypeSymbol.Name}|{attribute.Name}|{String.Join("|", attribute.Ages)}\"";
                 var result = $"partial class {symbol.Name}{{public override string ToString()=>{impl};}}";

@@ -1,4 +1,6 @@
-﻿using TestGenerator.Attributes;
+﻿using System.Text.RegularExpressions;
+
+using TestGenerator.Attributes;
 
 [TestGeneratorTarget("SomeName", new[] { 11, 22, 33 }, Type = typeof(StreamReader))]
 internal partial class TestTarget

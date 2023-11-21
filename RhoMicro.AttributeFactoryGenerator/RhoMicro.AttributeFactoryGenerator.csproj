@@ -2,9 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
-		<!--'.0' required for auto source gen updater-->
-		<!--<AssemblyName>$(MSBuildProjectName).0</AssemblyName>-->
-		<AssemblyName>$(MSBuildProjectName).50</AssemblyName>
+		<AssemblyName>$(MSBuildProjectName).125</AssemblyName>
 		<RootNamespace>$(MSBuildProjectName)</RootNamespace>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<developmentDependency>true</developmentDependency>
@@ -25,7 +23,7 @@
 		</Description>
 		<Copyright>2023</Copyright>
 		<PackageTags>Source Generator; Attributes; Tooling</PackageTags>
-		<Version>1.0.0</Version>
+		<Version>1.0.9</Version>
 		<PackageId>RhoMicro.AttributeFactoryGenerator</PackageId>
 		<Company>RhoMicro</Company>
 		<PackageProjectUrl>https://github.com/PaulBraetz/AttributeFactoryGenerator/</PackageProjectUrl>
@@ -49,13 +47,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	  <None Remove="bin\Debug\netstandard2.0\\RhoMicro.AttributeFactoryGenerator.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Resources\" />
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
-
-	<!--Required for source gen auto updater-->
+	
 	<!--AutoUpdateAssemblyName-->
 </Project>
