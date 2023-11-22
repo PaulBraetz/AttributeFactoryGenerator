@@ -13,6 +13,8 @@ Then this project could be of use to you!
 
 ## How to use
 
+Install the generator through [nuget](https://www.nuget.org/packages/RhoMicro.AttributeFactoryGenerator)
+
 In the assembly through which I distribute the attributes, I declare one:
 ```cs
 [AttributeUsage(AttributeTargets.Class)]
